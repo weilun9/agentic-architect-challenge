@@ -104,7 +104,7 @@ against the local model ([`docs/evidence/`](docs/evidence)):
 
 | Page | Naive script | Fixed pipeline |
 |---|---|---|
-| PEP 8 (~11.7k tokens) | Ollama log: `truncating input prompt limit=2050 prompt=10903`: the model saw **19%** of the page, then wrote a ~400-word summary mostly from memory | 6 chunks, 7 calls, all of the page read, 110 words, 36 s |
+| PEP 8 (~11.7k tokens) | Ollama log: `truncating input prompt limit=2050 prompt=10903`: the model saw **19%** of the page, then wrote a ~570-word summary mostly from memory, with no length limit | 6 chunks, 7 calls, all of the page read, 110 words, ~36 s wall clock |
 | Wikipedia "Coral bleaching" (~28k tokens) | No User-Agent and no status check: Wikipedia returned its **403 robot-policy page**, and the script summarised that page as if it were the article | 20 chunks, 25 calls. The first draft was 178 words; the guardrail had it rewritten to 94 |
 
 The fix, in order of the failure modes:

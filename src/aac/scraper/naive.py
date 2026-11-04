@@ -2,7 +2,7 @@
 
 The brief did not ship the script, so this is my hypothetical version of the common way it is
 written. It is kept unchanged so the fix can be compared with it (`python -m aac scrape --naive`).
-Each `# PROBLEM` comment is one failure mode; docs/part2_scraper.md explains them.
+Each `# PROBLEM` comment is one failure mode; the README (Part 2) explains them, with evidence in docs/evidence/.
 """
 
 import requests
