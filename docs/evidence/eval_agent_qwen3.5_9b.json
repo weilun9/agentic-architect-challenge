@@ -1,0 +1,147 @@
+{
+  "model": "qwen3.5:9b",
+  "cases": 11,
+  "answer_accuracy": 1.0,
+  "tool_precision": 1.0,
+  "tool_recall": 1.0,
+  "unneeded_tool_calls": 0,
+  "memory_cases_correct": 2,
+  "rows": [
+    {
+      "question": "How much does the Business plan cost per user per month?",
+      "expect": [
+        "18"
+      ],
+      "needs_tool": false,
+      "setup": [],
+      "answer": "The Business plan costs USD 18 per user per month.",
+      "called_tool": false,
+      "correct": true
+    },
+    {
+      "question": "What is the largest file I can upload through the web app?",
+      "expect": [
+        "5 GB",
+        "5GB"
+      ],
+      "needs_tool": false,
+      "setup": [],
+      "answer": "The largest single file you can upload through the web app is 5 GB.",
+      "called_tool": false,
+      "correct": true
+    },
+    {
+      "question": "Which storage regions can I choose from?",
+      "expect": [
+        "Frankfurt"
+      ],
+      "needs_tool": false,
+      "setup": [],
+      "answer": "You can choose from Singapore, Frankfurt, or Virginia when creating your account.",
+      "called_tool": false,
+      "correct": true
+    },
+    {
+      "question": "Is phone support available on weekends?",
+      "expect": [
+        "weekday",
+        "no",
+        "not"
+      ],
+      "needs_tool": false,
+      "setup": [],
+      "answer": "No, phone support is not available on weekends. According to the document, Business plans include phone support on weekdays from 9:00 to 18:00 Singapore time.",
+      "called_tool": false,
+      "correct": true
+    },
+    {
+      "question": "How much does the Enterprise plan cost?",
+      "expect": [
+        "don't know",
+        "do not know",
+        "not mention",
+        "no enterprise",
+        "doesn't",
+        "does not"
+      ],
+      "needs_tool": false,
+      "setup": [],
+      "answer": "I don't know from the document. The document only mentions Personal, Pro, and Business plans, but not an Enterprise plan.",
+      "called_tool": false,
+      "correct": true
+    },
+    {
+      "question": "How much would a team of 12 pay per year on the Business plan if they pay annually?",
+      "expect": [
+        "2073.6",
+        "2,073.6",
+        "2073.60"
+      ],
+      "needs_tool": true,
+      "setup": [],
+      "answer": "A team of 12 would pay USD 2,073.60 per year on the Business plan if they pay annually (with the 20% discount).",
+      "called_tool": true,
+      "correct": true
+    },
+    {
+      "question": "We have 3 Pro users and want one 10 TB storage pack. What is our monthly total?",
+      "expect": [
+        "80"
+      ],
+      "needs_tool": true,
+      "setup": [],
+      "answer": "Your monthly total is USD 80. This includes:\n- Pro plan: USD 10 \u00d7 3 users = USD 30\n- 10 TB storage pack: USD 50",
+      "called_tool": true,
+      "correct": true
+    },
+    {
+      "question": "If uptime is exactly 99.9% in a 30-day month, how many minutes of downtime is that?",
+      "expect": [
+        "43.2"
+      ],
+      "needs_tool": true,
+      "setup": [],
+      "answer": "At exactly 99.9% uptime in a 30-day month, there are 43.2 minutes of downtime.",
+      "called_tool": true,
+      "correct": true
+    },
+    {
+      "question": "How much would I save in a year on the Personal plan by paying annually instead of monthly?",
+      "expect": [
+        "9.6",
+        "9.60"
+      ],
+      "needs_tool": true,
+      "setup": [],
+      "answer": "By paying annually instead of monthly, you would save USD 9.60 in a year on the Personal plan.",
+      "called_tool": true,
+      "correct": true
+    },
+    {
+      "question": "What is my name?",
+      "expect": [
+        "Lawrance"
+      ],
+      "needs_tool": false,
+      "setup": [
+        "Hi, my name is Lawrance."
+      ],
+      "answer": "Your name is Lawrance.",
+      "called_tool": false,
+      "correct": true
+    },
+    {
+      "question": "What would we pay per month in total?",
+      "expect": [
+        "144"
+      ],
+      "needs_tool": true,
+      "setup": [
+        "We are a team of 8 on the Business plan."
+      ],
+      "answer": "For a team of 8 on the Business plan, you would pay USD 144 per month in total (USD 18 per user \u00d7 8 users).",
+      "called_tool": true,
+      "correct": true
+    }
+  ]
+}

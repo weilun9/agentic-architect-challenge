@@ -1,0 +1,32 @@
+{
+  "cases": 11,
+  "answer_accuracy": 1.0,
+  "tool_precision": 1.0,
+  "tool_recall": 1.0,
+  "unneeded_tool_calls": 0,
+  "memory_cases_correct": 2
+}
+ok  tool=n (need n) | How much does the Business plan cost per user per month?
+     -> 'The Business plan costs USD 18 per user per month.'
+ok  tool=n (need n) | What is the largest file I can upload through the web app?
+     -> 'The largest single file you can upload through the web app is 5 GB.'
+ok  tool=n (need n) | Which storage regions can I choose from?
+     -> 'You can choose from Singapore, Frankfurt, or Virginia when creating your account.'
+ok  tool=n (need n) | Is phone support available on weekends?
+     -> 'No, phone support is not available on weekends. According to the document, Business plans include phone support on weekdays from 9:00 to 18:00 Singapore time.'
+ok  tool=n (need n) | How much does the Enterprise plan cost?
+     -> "I don't know from the document. The document only mentions Personal, Pro, and Business plans, but not an Enterprise plan."
+ok  tool=Y (need Y) | How much would a team of 12 pay per year on the Business plan if they pay annually?
+     -> 'A team of 12 would pay USD 2,073.60 per year on the Business plan if they pay annually (with the 20% discount).'
+ok  tool=Y (need Y) | We have 3 Pro users and want one 10 TB storage pack. What is our monthly total?
+     -> 'Your monthly total is USD 80. This includes:\n- Pro plan: USD 10 × 3 users = USD 30\n- 10 TB storage pack: USD 50'
+ok  tool=Y (need Y) | If uptime is exactly 99.9% in a 30-day month, how many minutes of downtime is that?
+     -> 'At exactly 99.9% uptime in a 30-day month, there are 43.2 minutes of downtime.'
+ok  tool=Y (need Y) | How much would I save in a year on the Personal plan by paying annually instead of monthly?
+     -> 'By paying annually instead of monthly, you would save USD 9.60 in a year on the Personal plan.'
+ok  tool=n (need n) | What is my name?
+     -> 'Your name is Lawrance.'
+ok  tool=Y (need Y) | What would we pay per month in total?
+     -> 'For a team of 8 on the Business plan, you would pay USD 144 per month in total (USD 18 per user × 8 users).'
+
+report -> D:\dev\agentic-architect-challenge\runs\eval_agent_qwen3.5_9b.json

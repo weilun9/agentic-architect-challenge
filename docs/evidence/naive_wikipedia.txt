@@ -1,0 +1,11 @@
+The text you provided is **not the content of a webpage** but rather a **notice or instruction** typically found at the bottom of Wikipedia pages (or other Wikimedia Foundation sites).
+
+Here is a summary of what that text means:
+
+1.  **Request for User-Agent**: It asks visitors to configure their web browser or bot to send a "User-Agent" string. This identifies the software being used to access the site, which helps administrators distinguish between human users and automated bots.
+2.  **Robot Policy Compliance**: It explicitly instructs anyone scraping data or using bots to adhere to the site's **robot policy** (rules defining what can and cannot be automated).
+3.  **Reference Links**:
+    *   `https://w.wiki/4wJS`: A short link pointing to the specific robot policy documentation.
+    *   `https://phabricator.wikimedia.org/T400119`: A link to a specific task ticket on Phabricator (Wikimedia's project management tool), likely discussing technical details regarding user-agent strings or bot verification.
+
+**In short:** This is a standard footer message reminding automated users and scrapers to identify themselves properly and follow the rules before accessing the site's data.

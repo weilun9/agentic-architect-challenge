@@ -1,0 +1,22 @@
+# PEP 8 – Style Guide for Python Code | peps.python.org
+
+- Use 4-space indentation with a maximum line length of 79 characters (72 for docstrings/comments), preferring implied line continuation over backslashes.
+- Group imports by standard library, third-party, and local sources; define module-level dunders like `__all__` after the docstring but before imports.
+- Name classes using CapWords, functions/variables in lowercase with underscores, constants in ALL_CAPS, and avoid ambiguous single-letter variables like 'l' or 'O'.
+- Surround binary operators with spaces, use trailing commas for multi-line structures, and employ `with` statements for resource cleanup instead of bare `except`.
+- Declare public APIs via `__all__`, adopt PEP 484 type annotations, prefer `''.join()` for string concatenation, and check `None` using `is not None`.
+
+{
+  "url": "https://peps.python.org/pep-0008/",
+  "clean_chars": 34043,
+  "rendered_js": false,
+  "words": 110,
+  "bullets": 5,
+  "chunks_total": 6,
+  "chunks_used": 6,
+  "llm_calls": 7,
+  "raw_tokens_est": 11661,
+  "sent_tokens_est": 8506,
+  "guardrail": [],
+  "notes": []
+}

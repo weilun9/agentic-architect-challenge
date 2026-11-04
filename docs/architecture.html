@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Agentic Architect Challenge – Architecture</title>
+<style>
+  @page { size: A4; margin: 11mm 12mm; }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", Arial, sans-serif; font-size: 8.6pt; line-height: 1.32; color: #1d1d1f; margin: 0; }
+  h1 { font-size: 14pt; margin: 0 0 1mm; }
+  .sub { color: #555; margin-bottom: 2.5mm; }
+  h2 { font-size: 9.8pt; margin: 2.6mm 0 1mm; color: #0b3d91; border-bottom: 1px solid #c9d6ea; padding-bottom: .5mm; }
+  p { margin: .6mm 0; }
+  ul { margin: .4mm 0 .6mm 4.2mm; padding: 0; }
+  li { margin: .2mm 0; }
+  pre { font-family: Consolas, monospace; font-size: 7.2pt; line-height: 1.22; background: #f4f6fa; border: 1px solid #dde3ee; padding: 1.4mm 2mm; margin: .8mm 0; white-space: pre; }
+  table { border-collapse: collapse; width: 100%; font-size: 7.9pt; margin: .8mm 0; }
+  th, td { border: 1px solid #d5dbe6; padding: .7mm 1.4mm; text-align: left; vertical-align: top; }
+  th { background: #eef2f8; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 5mm; }
+  b { color: #111; }
+  .foot { color: #666; font-size: 7.6pt; margin-top: 1.5mm; }
+</style>
+</head>
+<body>
+<h1>Agentic Architect Challenge: System Architecture</h1>
+<div class="sub">Lawrance Tan · github.com/weilun9/agentic-architect-challenge · Python 3.12, LangGraph, Ollama <i>qwen3.5:9b</i> locally (OpenAI/Gemini by env var) · 84 offline tests, CI on Linux + Windows</div>
+
+<h2>Shared layer</h2>
+<p><b>llm.py</b>: one chat-model factory, <code>call()</code> (retry + backoff, latency/tokens traced) and <code>call_json()</code> (Pydantic validation, one repair prompt, then <code>LLMError</code>). <b>obs.py</b>: every step appends one JSON line (run_id, email id, step, status, ms, tokens, guardrail) → <code>aac trace-summary</code> gives p50/p95, errors, tokens and guardrail counts per step. Callers <b>fail closed</b> on <code>LLMError</code>.</p>
+
+<h2>Part 1: Support-email triage (LangGraph state machine)</h2>
+<pre>screen ─► classify ─┬─(any flag)──────────────────────────────► escalate ─► END   hand-off note to queue, NO draft
+ rules +   LLM JSON  │
+ SQLite    validated └─► retrieve ─► draft ─► verify ─┬─(ok, refund talk)─► judge ─┐
+ history                  BM25 KB     [n] cites    rules ├─(ok)─────────────────────────┴─► finalize ─► END  (human 1-click approve)
+                          refund policy pinned        ├─(problems, 1 revision)─► revise ─► verify
+                                                      └─(still failing)──────────────────► fallback ─► END  (verbatim-policy template)</pre>
+<div class="cols">
+<div>
+<ul>
+<li><b>Flag before drafting</b>: deterministic keyword rules (data loss / outage / breach) and contact count &gt; 3 in the 7 days up to the email run first, with no LLM. The classifier adds multi-label categories plus <i>risk_signals</i> for paraphrases. Either source escalates, and the gate sits before retrieval and drafting.</li>
+<li><b>Queues</b>: security-incident › tier2-technical › customer-care-lead › human-triage.</li>
+<li><b>Fail closed</b>: classifier down or invalid JSON → human. An exception in one email is contained, and the batch continues (thread pool).</li>
+</ul>
+</div>
+<div>
+<ul>
+<li><b>Refund hallucination, three layers</b>: (1) policy pinned and cited per claim; (2) rules: every number + unit must be in the cited passage, refund terms must cite the refund policy, no "we will refund / you are eligible" unless conditional or negated; (3) LLM judge reads each refund sentence against the full policy (no verdict = reject). Still failing → template that quotes the policy verbatim.</li>
+<li><b>Live result</b> (10 emails): all 4 escalations caught (1 by the LLM signal only); a refund draft that said "you are eligible" was blocked twice → template.</li>
+</ul>
+</div>
+</div>
+
+<h2>Part 2: Scrape and summarise: bottleneck and fix</h2>
+<p><b>Bottleneck:</b> the original sends <code>soup.get_text()</code> of the whole page in <b>one prompt</b>. Evidence: on PEP 8 Ollama logged <code>truncating input prompt limit=2050 prompt=10903</code> (the model saw 19% and summarised from memory). On Wikipedia, with no User-Agent or status check, it summarised the <b>403 bot-policy page</b>.</p>
+<table>
+<tr><th>Fetch</th><th>Extract</th><th>Summarise (map-reduce)</th><th>Conciseness guardrail</th></tr>
+<tr><td>timeouts, retry/backoff on 429/5xx, UA, raise_for_status, content-type check, streamed 5 MB cap; headless Chromium for JS shells (optional)</td>
+<td>drop script/style/nav/footer/cookie/share (whole-token class match); &lt;article&gt;/&lt;main&gt; or densest low-link-density block; dedupe lines</td>
+<td>~1.5k-token chunks condensed in a bounded thread pool → merged (tree-reduce if needed); >24 chunks sampled evenly and reported; failed chunks skipped</td>
+<td>budget in prompt + output-token cap → <code>check_concise</code> (words, bullets, preamble) → one targeted rewrite → deterministic sentence-boundary truncation. Always within budget.</td></tr>
+</table>
+<p>PEP 8: 6 chunks, 7 calls, whole page, 110 words, 36 s (same time as the naive call). Wikipedia (28k tokens): 20 chunks, first summary 178 words → guardrail rewrite → 94 words.</p>
+
+<h2>Part 3: Document agent with memory and a tool</h2>
+<div class="cols">
+<div>
+<pre>START ─► remember ─► agent ─(tool call, budget)─► tools ─┐
+                       ▲                                 │
+                       ├─────────────────────────────────┘
+                       └─(answer)─► check ─(grounded)─► END
+                       ▲              │
+                       └─(1 retry)────┘</pre>
+<ul>
+<li>Single ~600-token doc in the system prompt (no retrieval step that can miss).</li>
+<li><b>calculator</b>: AST whitelist, no eval/names, exponent and size caps. The model decides; the prompt says arithmetic only.</li>
+</ul>
+</div>
+<div>
+<ul>
+<li><b>Memory</b>: LangGraph checkpointer per thread_id; last 20 messages sent (never starting on an orphan tool result); the user's name is extracted into state and injected each turn, so it survives the window.</li>
+<li><b>Loop safety</b>: 4 tool calls per turn, then the model must answer without tools. Tool errors are returned as text.</li>
+<li><b>Answer check</b>: every number in the answer must come from the document, the user's messages or a calculator result. Otherwise the answer is removed from memory and the model retries once.</li>
+<li><b>Live eval</b> (11 cases, scored on the first sentence): tool precision/recall 1.0/1.0, memory 2/2, accuracy 10/11 → <b>11/11</b> with the check. The miss: the model used the tool for 4·12·0.8, then subtracted in its head ("save 6.40" instead of 9.60).</li>
+</ul>
+</div>
+</div>
+
+<h2>Trade-offs and known limits</h2>
+<ul>
+<li>BM25 over embeddings: deterministic, no download, exact terms ("annual", "503"); swap point is <code>KnowledgeBase.search</code>. Rules favour recall: false escalations are cheap, missed breaches are not.</li>
+<li>Non-refund claims are only number-checked (e07 stated an unlisted feature limit). The fix is to widen the judge to all sentences, at +1 call per email. The judge is the same small model, so it fails closed.</li>
+<li>Local 9B on one laptop GPU: classify p95 9.5 s, 26 s per email end to end (p95) with 4 workers. Hosted models or a queue + autoscaled workers for real load. MemorySaver → SQLite/Postgres checkpointer for production.</li>
+</ul>
+<div class="foot">Testing: 84 offline tests with a scripted fake model (every graph path, fail-closed cases, the exact live-run hallucinations, scraper fixture with every kind of clutter, calculator safety, memory window). Raw live outputs in docs/evidence/.</div>
+</body>
+</html>

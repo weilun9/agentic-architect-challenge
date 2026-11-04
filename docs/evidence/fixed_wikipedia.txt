@@ -1,0 +1,25 @@
+# Coral bleaching - Wikipedia
+
+- Rising temperatures trigger mass bleaching, affecting ~84.4% of reefs in 2024 and causing severe mortality rates up to 93%.
+- Stressors like heatwaves, acidification, and pollutants drive rapid coral cover loss, reversing five years of gains by 2026.
+- Reefs support a quarter of marine species but face collapse risks from disease outbreaks and declining fish diversity.
+- Recovery depends on juvenile density and herbivorous fish biomass, while economic services are valued between $130k–$1.2M per hectare annually.
+- Mitigation programs offer high benefit-cost ratios, yet future decalcification remains projected under current CO2 scenarios.
+
+{
+  "url": "https://en.wikipedia.org/wiki/Coral_bleaching",
+  "clean_chars": 109918,
+  "rendered_js": false,
+  "words": 94,
+  "bullets": 5,
+  "chunks_total": 20,
+  "chunks_used": 20,
+  "llm_calls": 25,
+  "raw_tokens_est": 28396,
+  "sent_tokens_est": 27467,
+  "guardrail": [
+    "violation: 178 words (limit 120)",
+    "rewritten by the model"
+  ],
+  "notes": []
+}
