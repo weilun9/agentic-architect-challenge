@@ -40,8 +40,9 @@ _DROP_TAGS = (
     "footer",
     "aside",
 )
-# Matched against whole tokens of id/class/role ("cookie-banner" -> cookie, banner), so an article
-# with class "has-comments" is kept while a div with class "comments" is dropped.
+# Matched against whole tokens of id/class/role ("cookie-banner" -> cookie, banner), so "discomment"
+# does not match. Tokens alone would also drop <article class="has-comments">, so html_to_text never
+# removes an element that holds most of the page's text: clutter is never the bulk of a page.
 _BOILERPLATE = frozenset(
     "cookie cookies consent banner newsletter subscribe promo advert ad ads sponsor sponsored share sharing social "
     "related recommended sidebar breadcrumb breadcrumbs comments popup modal menu navbar navigation "
@@ -138,9 +139,13 @@ def html_to_text(html: str) -> tuple[str, str]:
     title = soup.title.get_text(strip=True) if soup.title else ""
     for tag in soup(_DROP_TAGS):
         tag.decompose()
+    page_chars = len((soup.body or soup).get_text(" ", strip=True)) or 1
     for tag in soup.find_all(True):
-        if tag.name not in ("html", "body") and _is_boilerplate(tag):
-            tag.decompose()
+        if tag.name in ("html", "body") or not _is_boilerplate(tag):
+            continue
+        if len(tag.get_text(" ", strip=True)) > page_chars / 2:  # that is the content, whatever its class says
+            continue
+        tag.decompose()
     main = _pick_main(soup)
     lines, seen = [], set()
     for block in main.find_all(_BLOCKS):

@@ -29,6 +29,14 @@ def test_has_comments_class_does_not_delete_the_page():
     assert "Real content." in text
 
 
+def test_article_with_has_comments_class_is_kept():
+    # The token match alone deletes it: "has-comments" splits into {has, comments}.
+    html = '<body><article class="post has-comments"><p>' + "Real content. " * 50 + "</p></article>"
+    html += '<div class="comments"><p>Nice post, visit my site</p></div></body>'
+    _, text = html_to_text(html)
+    assert "Real content." in text and "visit my site" not in text
+
+
 def test_page_without_article_uses_densest_block():
     html = (
         "<body><div><a href='#'>Home</a> <a href='#'>About</a></div><div><p>"

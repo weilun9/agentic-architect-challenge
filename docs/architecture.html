@@ -24,7 +24,7 @@
 </head>
 <body>
 <h1>Agentic Architect Challenge: System Architecture</h1>
-<div class="sub">Lawrance Tan · github.com/weilun9/agentic-architect-challenge · Python 3.12, LangGraph, Ollama <i>qwen3.5:9b</i> locally (OpenAI/Gemini by env var) · 84 offline tests, CI on Linux + Windows</div>
+<div class="sub">Lawrance Tan · github.com/weilun9/agentic-architect-challenge · Python 3.12, LangGraph, Ollama <i>qwen3.5:9b</i> locally (OpenAI/Gemini by env var) · 85 offline tests, CI on Linux + Windows</div>
 
 <h2>Shared layer</h2>
 <p><b>llm.py</b>: one chat-model factory, <code>call()</code> (retry + backoff, latency/tokens traced) and <code>call_json()</code> (Pydantic validation, one repair prompt, then <code>LLMError</code>). <b>obs.py</b>: every step appends one JSON line (run_id, email id, step, status, ms, tokens, guardrail) → <code>aac trace-summary</code> gives p50/p95, errors, tokens and guardrail counts per step. Callers <b>fail closed</b> on <code>LLMError</code>.</p>
@@ -93,6 +93,6 @@
 <li>Non-refund claims are only number-checked (e07 stated an unlisted feature limit). The fix is to widen the judge to all sentences, at +1 call per email. The judge is the same small model, so it fails closed.</li>
 <li>Local 9B on one laptop GPU: classify p95 9.5 s, 26 s per email end to end (p95) with 4 workers. Hosted models or a queue + autoscaled workers for real load. MemorySaver → SQLite/Postgres checkpointer for production.</li>
 </ul>
-<div class="foot">Testing: 84 offline tests with a scripted fake model (every graph path, fail-closed cases, the exact live-run hallucinations, scraper fixture with every kind of clutter, calculator safety, memory window). Raw live outputs in docs/evidence/.</div>
+<div class="foot">Testing: 85 offline tests with a scripted fake model (every graph path, fail-closed cases, the exact live-run hallucinations, scraper fixture with every kind of clutter, calculator safety, memory window). Raw live outputs in docs/evidence/.</div>
 </body>
 </html>

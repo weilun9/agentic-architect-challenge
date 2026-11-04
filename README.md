@@ -9,7 +9,7 @@ Three small agent systems that share one LLM layer and one tracer:
 | 3. Document agent | Answers questions about one sample document, remembers the user's name and earlier context, and calls a calculator only when the question needs arithmetic | [`src/aac/docagent/`](src/aac/docagent) |
 
 Stack: Python 3.12, LangGraph, LangChain chat models (Ollama locally, or OpenAI / Gemini by env var),
-BM25, BeautifulSoup. **84 offline tests** (every LLM call scripted) run in CI on Linux and Windows.
+BM25, BeautifulSoup. **85 offline tests** (every LLM call scripted) run in CI on Linux and Windows.
 All the results below come from a local `qwen3.5:9b` (RTX 4060 laptop, 8 GB VRAM).
 
 The 1-page architecture summary is [`docs/architecture.pdf`](docs/architecture.pdf).
@@ -22,7 +22,7 @@ The 1-page architecture summary is [`docs/architecture.pdf`](docs/architecture.p
 git clone https://github.com/weilun9/agentic-architect-challenge && cd agentic-architect-challenge
 python -m venv .venv && .venv/Scripts/activate      # Linux/macOS: source .venv/bin/activate
 pip install -e ".[dev]"
-pytest -q                                            # 84 tests, no model or network needed
+pytest -q                                            # 85 tests, no model or network needed
 ```
 
 **Model.** The default is a free local model, so you don't need an API key:
@@ -113,7 +113,7 @@ The fix, in order of the failure modes:
    with backoff on 429/5xx, a real User-Agent, `raise_for_status`, content-type check, and a streamed
    5 MB cap.
 2. **Extraction**: drop scripts, styles, nav, footers, cookie banners and share widgets (matched on
-   whole class/id tokens, so `has-comments` keeps the article). Then take `<article>`/`<main>`, or
+   whole class/id tokens, so `discomment` is not "comment"; an element holding over half the page text is never dropped, so `<article class="has-comments">` survives). Then take `<article>`/`<main>`, or
    else the block with the most paragraph text and the lowest link density.
 3. **JavaScript pages**: if little text is left and the HTML looks like an app shell, render it with
    headless Chromium (optional extra). Without Playwright you get a clear error, not a summary of an empty page.
@@ -228,6 +228,6 @@ src/aac/
 data/kb/            refund policy + billing/technical/account FAQs (fictional "SkyVault")
 data/emails/        sample inbox + seeded contact history
 data/docagent/      the Part 3 sample document
-tests/              84 offline tests + an HTML fixture with every kind of page clutter
+tests/              85 offline tests + an HTML fixture with every kind of page clutter
 docs/evidence/      raw outputs and the Ollama truncation log behind the tables above
 ```
