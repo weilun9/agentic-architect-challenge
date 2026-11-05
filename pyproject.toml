@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=69"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Support-email triage agent, a robust scrape-and-summarize pipeline, and a document Q&A agent with memory and tool use."
 readme = "README.md"
 requires-python = ">=3.11"
-license = { text = "MIT" }
+license = "MIT"
 dependencies = [
     "langgraph>=1.0",
     "langchain-core>=1.0",
